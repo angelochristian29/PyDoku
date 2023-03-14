@@ -26,7 +26,7 @@ Included a GUI that only displays the partially filled sudoku board.
 ![](Images/pygameWindow_Unsolved.png)
 
 ### Prototype 3:
-Project meets criteria while still remaining visually pleasing to watch. Below are some examples of how the app works.
+Project is visually pleasing with updated GUI. Below are some examples of how the app works.
 
 Partially solved:
 
