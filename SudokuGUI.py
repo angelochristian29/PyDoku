@@ -1,4 +1,4 @@
-from SudokuSolver.SudokuBoard import SudokuBoard
+from SudokuBoard import SudokuBoard
 import sys, pygame as pg
 
 pg.init()
