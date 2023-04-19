@@ -6,6 +6,8 @@ class Square():
         self.domain = [1,2,3,4,5,6,7,8,9]
         self.constraints = []
         self.value = value
+        if(self.value != 0):
+            self.domain = [value]
     #def update(self)-> bool:
         #for node in self.constraints:
            # if(not node.domain.remove(self.value)):
@@ -78,6 +80,9 @@ class Board():
             for constraint in node.get_constraints():
                 if(node.constraint_update(constraint)):
                     arc_queue.put(constraint)
+                    if(len(constraint.domain) == 0):
+                        return False
+            return True
 
     def initialize(self,init = None):
             for i in range(self.side):
@@ -105,5 +110,9 @@ class Board():
 board = Board([[0,0,3,0,2,0,6,0,0],[9,0,0,3,0,5,0,0,1],[0,0,1,8,0,6,4,0,0],[0,0,8,1,0,2,9,0,0],[7,0,0,0,0,0,0,0,8],[0,0,6,7,0,8,2,0,0],[0,0,2,6,0,9,5,0,0],[9,0,0,2,0,3,0,0,9],[0,0,5,0,1,0,3,0,0]])
 board.arc_inference()
 print(board)
+for i in range(board.side):
+    for j in range(board.side):
+        print(board.board[i][j].domain)
+        
 
 
