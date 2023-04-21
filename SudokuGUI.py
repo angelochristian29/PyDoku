@@ -35,7 +35,6 @@ class SudokuGUI:
         n_text = font.render(str(board[r][c]), True, pg.Color(color))
         self.canvas.blit(n_text, pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))
 
-
     def backtracking_solver(self, board, r, c):
         if r > mySudoku.side - 1:
             return True
@@ -65,13 +64,13 @@ class SudokuGUI:
             pg.display.update()
             pg.time.delay(15)
             return False
+
     def board_finished(self):
         for r in range(mySudoku.side):
             for c in range(mySudoku.side):
                 if mySudoku.s_board[r][c] == 0:
                     return False
         return True
-
 
 # main
 def sudoku_loop():
