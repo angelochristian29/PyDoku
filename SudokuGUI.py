@@ -1,6 +1,7 @@
 from SudokuBoard import SudokuBoard
 import sys, pygame as pg
 
+buttons = {pg.K_1:1,pg.K_2:2,pg.K_3:3,pg.K_4:4,pg.K_5:5,pg.K_6:6,pg.K_7:7,pg.K_8:8,pg.K_9:9}
 pg.init()
 font = pg.font.SysFont(None, 60)
 mySudoku = SudokuBoard()
@@ -71,6 +72,21 @@ class SudokuGUI:
                 if mySudoku.s_board[r][c] == 0:
                     return False
         return True
+    def assign_number(self,position):
+        if(position[0] > 630 or position[0] < 10 or position[1]>630 or position[1] < 10):
+            return
+        row = (position[1] - 10)//70
+        col = (position[0] - 10)//70
+        print(row,col)
+        while(True):
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN:
+                        mySudoku.s_board[row][col] = buttons[event.key]
+                        pg.display.flip()
+                        pg.display.update()
+                        return
+
+
 
 
 # main
@@ -84,11 +100,14 @@ def sudoku_loop():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 to_run = False
+                pg.quit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_1 or event.key == pg.K_KP1:
                     myGUI.backtracking_solver(mySudoku.s_board, 0, 0)
                     if myGUI.board_finished():
                         print("Game Over")
+            if event.type == pg.MOUSEBUTTONDOWN:
+                myGUI.assign_number(pg.mouse.get_pos())
         myGUI.draw_canvas()
         myGUI.draw_nums(mySudoku.s_board)
         pg.display.flip()
