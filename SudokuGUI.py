@@ -113,8 +113,9 @@ def sudoku_loop():
     while to_run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                to_run = False
+                #to_run = False
                 pg.quit()
+                sys.exit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_1 or event.key == pg.K_KP1:
                     myGUI.backtracking_solver(mySudoku.s_board, 0, 0)
@@ -127,6 +128,9 @@ def sudoku_loop():
                     reset_game()
                 if 300 <= x <= 450 and 670 <= y <= 720:
                     go_to_menu()
+                if 125 <= x <= 275 and 670 <= y <= 720:
+                    pg.quit()
+                    sys.exit()
 
         myGUI.draw_canvas()
         myGUI.draw_nums(mySudoku.s_board)
@@ -138,8 +142,15 @@ def sudoku_loop():
         menu_text = font.render("Menu", True, pg.Color("black"))
         menu_rect = reset_text.get_rect(center=(375, 695))
         pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(300, 670, 150, 50), 0)
+
+
+        quit_text = font.render("Quit", True, pg.Color("black"))
+        quit_rect = reset_text.get_rect(center=(200, 695))
+        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(125, 670, 150, 50), 0)
+
         canvas.blit(reset_text, reset_rect)
         canvas.blit(menu_text, menu_rect)
+        canvas.blit(quit_text, quit_rect)
 
         pg.display.flip()
 
