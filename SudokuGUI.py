@@ -116,5 +116,5 @@ def sudoku_loop():
         pg.display.flip()
 
 
-sudoku_loop()
-pg.quit()
+# sudoku_loop()
+# pg.quit()
