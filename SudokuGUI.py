@@ -83,6 +83,9 @@ def reset_game():
     mySudoku = SudokuBoard()
     mySudoku.s_board = mySudoku.sudoku_maker()
 
+def go_to_menu():
+    print("menu")
+
 
 def sudoku_loop():
     canvas_size = 650, 750
@@ -104,6 +107,8 @@ def sudoku_loop():
                 x, y = pg.mouse.get_pos()
                 if 475 <= x <= 625 and 670 <= y <= 720:
                     reset_game()
+                if 300 <= x <= 450 and 670 <= y <= 720:
+                    go_to_menu()
 
         myGUI.draw_canvas()
         myGUI.draw_nums(mySudoku.s_board)
@@ -111,7 +116,12 @@ def sudoku_loop():
         reset_text = font.render("Reset", True, pg.Color("black"))
         reset_rect = reset_text.get_rect(center=(550, 695))
         pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(475, 670, 150, 50), 0)
+
+        menu_text = font.render("Menu", True, pg.Color("black"))
+        menu_rect = reset_text.get_rect(center=(375, 695))
+        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(300, 670, 150, 50), 0)
         canvas.blit(reset_text, reset_rect)
+        canvas.blit(menu_text, menu_rect)
 
         pg.display.flip()
 
