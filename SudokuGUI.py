@@ -1,4 +1,5 @@
 from SudokuBoard import SudokuBoard
+import Menu
 import sys, pygame as pg
 
 buttons = {pg.K_1:1,pg.K_2:2,pg.K_3:3,pg.K_4:4,pg.K_5:5,pg.K_6:6,pg.K_7:7,pg.K_8:8,pg.K_9:9}
@@ -99,8 +100,9 @@ def reset_game():
     mySudoku = SudokuBoard()
     mySudoku.s_board = mySudoku.sudoku_maker()
 
+
 def go_to_menu():
-    print("menu")
+    Menu.main()
 
 
 def sudoku_loop():
@@ -113,7 +115,7 @@ def sudoku_loop():
     while to_run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                #to_run = False
+                # to_run = False
                 pg.quit()
                 sys.exit()
             if event.type == pg.KEYDOWN:
@@ -143,7 +145,6 @@ def sudoku_loop():
         menu_rect = reset_text.get_rect(center=(375, 695))
         pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(300, 670, 150, 50), 0)
 
-
         quit_text = font.render("Quit", True, pg.Color("black"))
         quit_rect = reset_text.get_rect(center=(200, 695))
         pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(125, 670, 150, 50), 0)
@@ -153,7 +154,6 @@ def sudoku_loop():
         canvas.blit(quit_text, quit_rect)
 
         pg.display.flip()
-
 
 # sudoku_loop()
 # pg.quit()
