@@ -1,4 +1,4 @@
-from SudokuSolver.SudokuBoard import SudokuBoard
+from SudokuBoard import SudokuBoard
 import sys, pygame as pg
 
 pg.init()
@@ -94,5 +94,5 @@ def sudoku_loop():
         pg.display.flip()
 
 
-sudoku_loop()
-pg.quit()
+# sudoku_loop()
+# pg.quit()
