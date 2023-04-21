@@ -93,7 +93,6 @@ class SudokuGUI:
 
 
 
-
 # main
 def reset_game():
     global mySudoku
