@@ -1,6 +1,6 @@
 #import queue
 from SudokuBoard import SudokuBoard
-#from heapq import heapq
+import heapq
 
 alphabet = "ABCDEFGHI"
 class Queue():
@@ -26,6 +26,7 @@ class Square():
         self.value = value
         if(self.value != 0):
             self.domain = [value]
+        self.degree = 0
     #def update(self)-> bool:
         #for node in self.constraints:
            # if(not node.domain.remove(self.value)):
@@ -46,6 +47,9 @@ class Square():
         return self.constraints
     def add_constraints(self,constraints):
         self.constraints.extend(constraints)
+        for constraint in constraints:
+            if constraint.value == 0:
+                self.degree += 1
     def constraint_update(self,constraint):
         if(self.value == 0):
             return False
@@ -119,8 +123,10 @@ class Board():
                 self.board[i][j].add_constraints(self.getColumn(i,j))
                 self.board[i][j].add_constraints(self.getRow(i,j))
                 self.board[i][j].add_constraints(self.getSquare(i,j))
-
-    
+    def backtracking_search(self) -> bool:
+        return self.backtrack()
+    def backtrack(self) -> bool:
+        pass
     def __str__(self) -> str:
         string = "\n"
         for i in range(self.side):
