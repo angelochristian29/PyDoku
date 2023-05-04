@@ -20,13 +20,15 @@ def main():
     title_label = font.render("Welcome to PyDoku!", True, (0, 0, 0))
     title_label_rect = title_label.get_rect(center=(screen_width / 2, 100))
 
-    # create start button
-    start_button = font.render("Start", True, (0, 0, 0))
-    start_button_rect = start_button.get_rect(center=(screen_width / 2, 300))
+    # create start button with gray background
+    start_button_surf = pygame.Surface((150, 50))
+    start_button_surf.fill((128, 128, 128))
+    start_button_rect = start_button_surf.get_rect(center=(screen_width / 2, 300))
 
-    # create quit button objects
-    quit_button = font.render("Quit", True, (0, 0, 0))
-    quit_button_rect = quit_button.get_rect(bottomleft=(10, screen_height-10))
+    # create quit button with gray background
+    quit_button_surf = pygame.Surface((100, 50))
+    quit_button_surf.fill((128, 128, 128))
+    quit_button_rect = quit_button_surf.get_rect(bottomleft=(10, screen_height - 10))
 
     # main loop
     while True:
@@ -44,11 +46,28 @@ def main():
                     pygame.quit()
                     sys.exit()
 
+        # check for mouse events
+        mouse_pos = pygame.mouse.get_pos()
+        if start_button_rect.collidepoint(mouse_pos):
+            start_button_surf.fill((192, 192, 192))  # lighter gray when hovered
+        else:
+            start_button_surf.fill((128, 128, 128))  # darker gray when not hovered
+
+        if quit_button_rect.collidepoint(mouse_pos):
+            quit_button_surf.fill((192, 192, 192))  # lighter gray when hovered
+        else:
+            quit_button_surf.fill((128, 128, 128))  # darker gray when not hovered
+
         # draw widgets
         screen.fill((255, 255, 255))
         screen.blit(title_label, title_label_rect)
-        screen.blit(start_button, start_button_rect)
-        screen.blit(quit_button, quit_button_rect)
+        screen.blit(start_button_surf, start_button_rect)
+        screen.blit(quit_button_surf, quit_button_rect)
+        screen.blit(font.render("Start", True, (0, 0, 0)), start_button_rect.move(35, 5))
+        screen.blit(font.render("Quit", True, (0, 0, 0)), quit_button_rect.move(15, 5))
+
+        # update display
+        pygame.display.update()
 
         # update display
         pygame.display.update()
@@ -56,14 +75,15 @@ def main():
         # check for mouse events
         mouse_pos = pygame.mouse.get_pos()
         if start_button_rect.collidepoint(mouse_pos):
-            start_button = font.render("Start", True, (255, 0, 0))
+            start_button_surf.fill((192, 192, 192))  # lighter gray when hovered
         else:
-            start_button = font.render("Start", True, (0, 0, 0))
+            start_button_surf.fill((128, 128, 128))  # darker gray when not hovered
 
         if quit_button_rect.collidepoint(mouse_pos):
-            quit_button = font.render("Quit", True, (255, 0, 0))
+            quit_button_surf.fill((192, 192, 192))  # lighter gray when hovered
         else:
-            quit_button = font.render("Quit", True, (0, 0, 0))
+            quit_button_surf.fill((128, 128, 128))  # darker gray when not hovered
+
 
 if __name__ == "__main__":
     main()

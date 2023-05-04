@@ -1,3 +1,4 @@
+import Menu
 from SudokuBoard import SudokuBoard
 import Menu
 import sys, pygame as pg
