@@ -1,3 +1,4 @@
+import Menu
 from SudokuBoard import SudokuBoard
 import sys, pygame as pg
 
@@ -84,7 +85,7 @@ def reset_game():
     mySudoku.s_board = mySudoku.sudoku_maker()
 
 def go_to_menu():
-    print("menu")
+    Menu.main()
 
 
 def sudoku_loop():
