@@ -1,4 +1,5 @@
 from SudokuBoard import SudokuBoard
+from SudokuCSP import *
 import Menu
 import sys, pygame as pg
 
@@ -93,7 +94,8 @@ class SudokuGUI:
 
 
 
-
+def update(GUI,board,r,c,color):
+    pass
 # main
 def reset_game():
     global mySudoku
@@ -155,5 +157,5 @@ def sudoku_loop():
 
         pg.display.flip()
 
-# sudoku_loop()
-# pg.quit()
+sudoku_loop()
+pg.quit()

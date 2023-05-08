@@ -9,14 +9,11 @@ alphabet = "ABCDEFGHI"
 
 
 class Integer():
-    def __init__(self, value=0,update = None) -> None:
+    def __init__(self, value=0) -> None:
         self.value = value
-        self.update = update
 
     def set(self, value):
         self.value = value
-        if not self.update is None:
-            self.update()
 
     def get(self):
         return self.value
@@ -43,11 +40,11 @@ class Queue():
 
 
 class Square():
-    def __init__(self, name="", value=0,update = None) -> None:
+    def __init__(self, name="", value=0) -> None:
         self.name = name
         self.domain = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.constraints = []
-        self.value = Integer(value,update)
+        self.value = Integer(value)
         if (self.value.get() != 0):
             self.domain = [value]
         self.degree = 0
@@ -113,12 +110,14 @@ class Square():
 # pass
 
 class Board():
-    def __init__(self, init=None,update = None) -> None:
+    def __init__(self, init=None) -> None:
         self.board = []
         self.base = 3
         self.side = self.base ** 2
-        self.update = update
-        self.initialize(init)
+        if (init is None):
+            self.initialize()
+        else:
+            self.initialize(init)
 
     def getRow(self, row, col):
         values = []
@@ -148,7 +147,7 @@ class Board():
         if removals is None:
             removals = []
         if (arc_queue is None):
-            return False
+            return
         while (not arc_queue.empty()):
             node = arc_queue.get()
             for constraint in node.get_constraints():
@@ -163,9 +162,9 @@ class Board():
             self.board.append([])
             for j in range(self.side):
                 if (init is None):
-                    self.board[i].append(Square(alphabet[i] + str(j + 1),0,self.update))
+                    self.board[i].append(Square(alphabet[i] + str(j + 1)))
                 else:
-                    self.board[i].append(Square(alphabet[i] + str(j + 1), init[i][j],self.update))
+                    self.board[i].append(Square(alphabet[i] + str(j + 1), init[i][j]))
         for i in range(self.side):
             for j in range(self.side):
                 self.board[i][j].add_constraints(self.getColumn(i, j))
@@ -193,7 +192,6 @@ class Board():
         removals = []
         for value in square.domain:
             square.value.set(value)
-            #print(square)
             removals.append((square.value, 0))
             arc_queue = Queue()
             arc_queue.put(square)
@@ -225,11 +223,6 @@ def test_board(test_board):
     test_board.backtracking_search()
     print("After\n" + str(test_board))
 
-def debug_board(test_board):
-    for i in range(test_board.side):
-            for j in range(test_board.side):
-                print(test_board.board[i][j])
-
 
 board = Board(
         [[0, 0, 3, 0, 2, 0, 6, 0, 0], [9, 0, 0, 3, 0, 5, 0, 0, 1], [0, 0, 1, 8, 0, 6, 4, 0, 0],
@@ -238,8 +231,4 @@ board = Board(
          [8, 0, 0, 2, 0, 3, 0, 0, 9],
          [0, 0, 5, 0, 1, 0, 3, 0, 0]])
 test_board(board)
-random_board = Board(SudokuBoard().sudoku_maker())
-test_board(random_board)
-#debug_board(random_board)
-#board = Board()
-#test_board(board)
+test_board(Board(SudokuBoard().sudoku_maker()))
