@@ -1,5 +1,5 @@
 from SudokuBoard import SudokuBoard
-from SudokuCSP import *
+import SudokuCSP
 import Menu
 import sys, pygame as pg
 
@@ -94,8 +94,11 @@ class SudokuGUI:
 
 
 
-def update(GUI,board,r,c,color):
-    pass
+def update(GUI,board,r,c):
+    GUI.solve_draw(board, r, c, "red")
+    pg.display.flip()
+    pg.display.update()
+    pg.time.delay(15)
 # main
 def reset_game():
     global mySudoku
@@ -114,6 +117,7 @@ def sudoku_loop():
     pg.display.set_caption("Sudoku Solver")
     to_run = True
     myGUI = SudokuGUI(canvas)
+    board = SudokuCSP.Board(SudokuBoard().sudoku_maker(),update)
     while to_run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -122,7 +126,8 @@ def sudoku_loop():
                 sys.exit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_1 or event.key == pg.K_KP1:
-                    myGUI.backtracking_solver(mySudoku.s_board, 0, 0)
+                    #myGUI.backtracking_solver(mySudoku.s_board, 0, 0)
+                    board.backtracking_search()
                     if myGUI.board_finished():
                         print("Game Over")
             if event.type == pg.MOUSEBUTTONDOWN:

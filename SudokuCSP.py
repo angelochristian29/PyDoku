@@ -4,19 +4,29 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from SudokuBoard import SudokuBoard
+#from SudokuGUI import *
+import pygame as pg
 
 alphabet = "ABCDEFGHI"
 
+class CSPGUIAdapter():
+    def __init__(self,GUI,color,update) -> None:
+        self.updateGUI = update
+        self.GUI = GUI
+        self.color = color
+    def update(self,r,c):
+        self.updateGUI(self.GUI,r,c,self.color)
 
 class Integer():
-    def __init__(self, value=0,update = None) -> None:
+    def __init__(self, value=0,square=None) -> None:
         self.value = value
-        self.update = update
+        self.square= square
 
     def set(self, value):
+        self.square.board.sum -= self.value
         self.value = value
-        if not self.update is None:
-            self.update()
+        self.square.board.sum += self.value
+
 
     def get(self):
         return self.value
@@ -43,14 +53,16 @@ class Queue():
 
 
 class Square():
-    def __init__(self, name="", value=0,update = None) -> None:
+    def __init__(self, name="", value=0,r=0,c=0,board=None) -> None:
         self.name = name
         self.domain = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.constraints = []
-        self.value = Integer(value,update)
+        self.value = Integer(value,self)
+        self.coord = (r,c)
         if (self.value.get() != 0):
             self.domain = [value]
         self.degree = 0
+        self.board = board
 
     def remove(self, value, removals=None):
         if removals is None:
@@ -59,9 +71,9 @@ class Square():
         if (contains):
             self.domain.remove(value)
             removals.append((self.domain, value))
-        if (len(self.domain) == 1):
-            self.value.set(self.domain[0])
-            removals.append((self.value, 0))
+            if (len(self.domain) == 1):
+                self.value.set(self.domain[0])
+                removals.append((self.value, 0))
         return contains
 
     def setValue(self, value):
@@ -84,7 +96,7 @@ class Square():
             removals = []
         if (self.value.get() == 0):
             return False
-        return constraint.remove(self.value.get())
+        return constraint.remove(self.value.get(),removals)
 
     def __str__(self) -> str:
         string = self.name + "\nValue: " + str(self.value.get()) + "\nDomain: "
@@ -107,17 +119,13 @@ class Square():
     def __ge__(self, other):
         return len(self.domain) <= len(other.domain)
 
-
-# class Constraint():
-# def __init__(self) -> None:
-# pass
-
 class Board():
-    def __init__(self, init=None,update = None) -> None:
+    def __init__(self, init=None,GUIAd = None) -> None:
         self.board = []
         self.base = 3
         self.side = self.base ** 2
-        self.update = update
+        self.GUIAd = GUIAd
+        self.sum = 0
         self.initialize(init)
 
     def getRow(self, row, col):
@@ -152,7 +160,7 @@ class Board():
         while (not arc_queue.empty()):
             node = arc_queue.get()
             for constraint in node.get_constraints():
-                if (node.constraint_update(constraint)):
+                if (node.constraint_update(constraint,removals)):
                     arc_queue.put(constraint)
                     if (len(constraint.domain) == 0):
                         return False
@@ -163,9 +171,10 @@ class Board():
             self.board.append([])
             for j in range(self.side):
                 if (init is None):
-                    self.board[i].append(Square(alphabet[i] + str(j + 1),0,self.update))
+                    self.board[i].append(Square(alphabet[i] + str(j + 1),0,i,j,self))
                 else:
-                    self.board[i].append(Square(alphabet[i] + str(j + 1), init[i][j],self.update))
+                    self.board[i].append(Square(alphabet[i] + str(j + 1), init[i][j],i,j,self))
+                    self.sum += init[i][j]
         for i in range(self.side):
             for j in range(self.side):
                 self.board[i][j].add_constraints(self.getColumn(i, j))
@@ -184,32 +193,39 @@ class Board():
             for j in range(self.side):
                 if (self.board[i][j].getValue() == 0):
                     heapq.heappush(heap, self.board[i][j])
-        self.backtrack(heap)
+        return self.backtrack(heap)
 
     def backtrack(self, heap):
-        if (len(heap) == 0):
-            return
+        if (len(heap) == 0  or self.sum == 405):
+            return True
         square = heapq.heappop(heap)
         removals = []
         for value in square.domain:
+            prev_value = square.value.get()
             square.value.set(value)
             #print(square)
-            removals.append((square.value, 0))
+            #print(self)
+            #print(self.sum)
+            removals.append((square.value, prev_value))
             arc_queue = Queue()
             arc_queue.put(square)
             if (self.arc_inference(arc_queue, removals)):
-                self.backtrack(heap)
-            else:
-                self.reverse_removals(removals)
-                heapq.heappush(heap, square)
+                result = self.backtrack(heap) 
+                if(result):
+                    return result
+            self.reverse_removals(removals)
+        heapq.heappush(heap, square)  
+        return False
 
     def reverse_removals(self, removals):
         for removed in removals:
             if (type(removed[0]) is Integer):
-                removed[0].set(0)
+                removed[0].set(removed[1])
             else:
                 list = removed[0]
                 list.append(removed[1])
+                list.sort()
+        removals.clear()
 
     def __str__(self) -> str:
         string = "\n"
@@ -222,7 +238,7 @@ class Board():
 def test_board(test_board):
     print("Before\n" + str(test_board))
     test_board.arc_inference()
-    test_board.backtracking_search()
+    print(test_board.backtracking_search())
     print("After\n" + str(test_board))
 
 def debug_board(test_board):
@@ -230,6 +246,20 @@ def debug_board(test_board):
             for j in range(test_board.side):
                 print(test_board.board[i][j])
 
+board = Board([
+[0, 3, 4, 0, 7, 0, 0, 0, 0],
+[5, 9, 2, 0, 0, 4, 0, 0, 0],
+[0, 8, 0, 0, 0, 0, 0, 0, 0],
+[8, 0, 0, 0, 0, 0, 0, 2, 0],
+[0, 0, 0, 0, 0, 0, 7, 0, 0],
+[0, 1, 0, 0, 0, 0, 6, 0, 8],
+[0, 6, 0, 7, 0, 0, 0, 5, 0],
+[0, 0, 0, 0, 0, 0, 0, 6, 0],
+[0, 5, 3, 6, 0, 0, 0, 0, 0]])
+test_board(board)
+
+board = Board()
+test_board(board)
 
 board = Board(
         [[0, 0, 3, 0, 2, 0, 6, 0, 0], [9, 0, 0, 3, 0, 5, 0, 0, 1], [0, 0, 1, 8, 0, 6, 4, 0, 0],
@@ -240,6 +270,3 @@ board = Board(
 test_board(board)
 random_board = Board(SudokuBoard().sudoku_maker())
 test_board(random_board)
-#debug_board(random_board)
-#board = Board()
-#test_board(board)
