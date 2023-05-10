@@ -36,10 +36,17 @@ class SudokuGUI:
                     n_text = font.render(str(board[r][c]), True, pg.Color("black"))
                     self.canvas.blit(n_text,
                                      pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))  # modify this for sketching feature
+    def draw_nums_CSP(self,board):
+        for r in range(9):
+            for c in range(9):
+                if board.board[r][c].value.get() != 0:
+                    n_text = font.render(str(board.board[r][c].value.get()), True, pg.Color("black"))
+                    self.canvas.blit(n_text,
+                                     pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))  # modify this for sketching feature
 
     def solve_draw(self, board, r, c, color):
         pg.draw.rect(self.canvas, pg.Color("white"), pg.Rect(c * 70 + 20, r * 70 + 20, 50, 50), 0)
-        n_text = font.render(str(board[r][c]), True, pg.Color(color))
+        n_text = font.render(str(board.board[r][c].value.get()), True, pg.Color(color))
         self.canvas.blit(n_text, pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))
 
     def backtracking_solver(self, board, r, c):
@@ -94,8 +101,8 @@ class SudokuGUI:
 
 
 
-def update(GUI,board,r,c):
-    GUI.solve_draw(board, r, c, "red")
+def update(GUI,board,r,c,color):
+    GUI.solve_draw(board, r, c, color)
     pg.display.flip()
     pg.display.update()
     pg.time.delay(15)
@@ -117,7 +124,9 @@ def sudoku_loop():
     pg.display.set_caption("Sudoku Solver")
     to_run = True
     myGUI = SudokuGUI(canvas)
-    board = SudokuCSP.Board(SudokuBoard().sudoku_maker(),update)
+    GUIAdapter = SudokuCSP.CSPGUIAdapter(myGUI,"blue",update)
+    simple_board = SudokuBoard().sudoku_maker()
+    board = SudokuCSP.Board(simple_board,GUIAdapter)
     while to_run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -134,15 +143,15 @@ def sudoku_loop():
                 myGUI.assign_number(pg.mouse.get_pos())
                 x, y = pg.mouse.get_pos()
                 if 475 <= x <= 625 and 670 <= y <= 720:
-                    reset_game()
+                    simple_board = SudokuBoard().sudoku_maker()
+                    board = SudokuCSP.Board(simple_board,GUIAdapter)
                 if 300 <= x <= 450 and 670 <= y <= 720:
                     go_to_menu()
                 if 125 <= x <= 275 and 670 <= y <= 720:
                     pg.quit()
                     sys.exit()
-
         myGUI.draw_canvas()
-        myGUI.draw_nums(mySudoku.s_board)
+        myGUI.draw_nums_CSP(board)
 
         reset_text = font.render("Reset", True, pg.Color("black"))
         reset_rect = reset_text.get_rect(center=(550, 695))
@@ -161,6 +170,5 @@ def sudoku_loop():
         canvas.blit(quit_text, quit_rect)
 
         pg.display.flip()
-
-sudoku_loop()
-pg.quit()
+#sudoku_loop()
+#pg.quit()

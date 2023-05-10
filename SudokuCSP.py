@@ -14,8 +14,9 @@ class CSPGUIAdapter():
         self.updateGUI = update
         self.GUI = GUI
         self.color = color
-    def update(self,r,c):
-        self.updateGUI(self.GUI,r,c,self.color)
+    def update(self,board,r,c,color):
+        self.updateGUI(self.GUI,board,r,c,color)
+                
 
 class Integer():
     def __init__(self, value=0,square=None) -> None:
@@ -74,6 +75,8 @@ class Square():
             if (len(self.domain) == 1):
                 self.value.set(self.domain[0])
                 removals.append((self.value, 0))
+                if (self.board.GUIAd is not None):
+                    self.board.GUIAd.update(self.board,self.coord[0],self.coord[1],"red")
         return contains
 
     def setValue(self, value):
@@ -171,9 +174,9 @@ class Board():
             self.board.append([])
             for j in range(self.side):
                 if (init is None):
-                    self.board[i].append(Square(alphabet[i] + str(j + 1),0,i,j,self))
+                    self.board[i].append(Square(alphabet[i] + str(j + 1),0,i,j,board=self))
                 else:
-                    self.board[i].append(Square(alphabet[i] + str(j + 1), init[i][j],i,j,self))
+                    self.board[i].append(Square(alphabet[i] + str(j + 1), init[i][j],i,j,board=self))
                     self.sum += init[i][j]
         for i in range(self.side):
             for j in range(self.side):
@@ -203,6 +206,8 @@ class Board():
         for value in square.domain:
             prev_value = square.value.get()
             square.value.set(value)
+            if(self.GUIAd is not None):
+                self.GUIAd.update(self,square.coord[0],square.coord[1],"blue")
             #print(square)
             #print(self)
             #print(self.sum)
