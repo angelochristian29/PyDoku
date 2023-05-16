@@ -2,6 +2,7 @@ from SudokuBoard import SudokuBoard
 import SudokuCSP
 import Menu
 import sys, pygame as pg
+import time
 
 buttons = {pg.K_1:1,pg.K_2:2,pg.K_3:3,pg.K_4:4,pg.K_5:5,pg.K_6:6,pg.K_7:7,pg.K_8:8,pg.K_9:9}
 pg.init()
@@ -9,7 +10,17 @@ font = pg.font.SysFont(None, 60)
 mySudoku = SudokuBoard()
 mySudoku.s_board = mySudoku.sudoku_maker()
 
-
+class Timer():
+    started = False
+    start = 0
+    def timer():
+        if(Timer.started):
+            Timer.started = False
+            return time.time() - Timer.start
+        else:
+            Timer.start = time.time()
+            Timer.started = True
+        
 class SudokuGUI:
     def __init__(self, canvas):
         self.canvas = canvas
@@ -105,7 +116,7 @@ def update(GUI,board,r,c,color):
     GUI.solve_draw(board, r, c, color)
     pg.display.flip()
     pg.display.update()
-    pg.time.delay(15)
+    #pg.time.delay(15)
 # main
 def reset_game():
     global mySudoku
@@ -135,8 +146,9 @@ def sudoku_loop():
                 sys.exit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_1 or event.key == pg.K_KP1:
-                    #myGUI.backtracking_solver(mySudoku.s_board, 0, 0)
+                    Timer.timer()
                     board.backtracking_search()
+                    print(Timer.timer())
                     if myGUI.board_finished():
                         print("Game Over")
             if event.type == pg.MOUSEBUTTONDOWN:

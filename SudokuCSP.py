@@ -250,7 +250,7 @@ def debug_board(test_board):
     for i in range(test_board.side):
             for j in range(test_board.side):
                 print(test_board.board[i][j])
-
+'''
 board = Board([
 [0, 3, 4, 0, 7, 0, 0, 0, 0],
 [5, 9, 2, 0, 0, 4, 0, 0, 0],
@@ -275,3 +275,4 @@ board = Board(
 test_board(board)
 random_board = Board(SudokuBoard().sudoku_maker())
 test_board(random_board)
+'''
