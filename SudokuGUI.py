@@ -1,7 +1,9 @@
 import Menu
 from SudokuBoard import SudokuBoard
+import SudokuCSP
 import Menu
 import sys, pygame as pg
+import time
 
 buttons = {pg.K_1:1,pg.K_2:2,pg.K_3:3,pg.K_4:4,pg.K_5:5,pg.K_6:6,pg.K_7:7,pg.K_8:8,pg.K_9:9}
 pg.init()
@@ -9,7 +11,17 @@ font = pg.font.SysFont(None, 60)
 mySudoku = SudokuBoard()
 mySudoku.s_board = mySudoku.sudoku_maker()
 
-
+class Timer():
+    started = False
+    start = 0
+    def timer():
+        if(Timer.started):
+            Timer.started = False
+            return time.time() - Timer.start
+        else:
+            Timer.start = time.time()
+            Timer.started = True
+        
 class SudokuGUI:
     def __init__(self, canvas):
         self.canvas = canvas
@@ -36,10 +48,17 @@ class SudokuGUI:
                     n_text = font.render(str(board[r][c]), True, pg.Color("black"))
                     self.canvas.blit(n_text,
                                      pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))  # modify this for sketching feature
+    def draw_nums_CSP(self,board):
+        for r in range(9):
+            for c in range(9):
+                if board.board[r][c].value.get() != 0:
+                    n_text = font.render(str(board.board[r][c].value.get()), True, pg.Color("black"))
+                    self.canvas.blit(n_text,
+                                     pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))  # modify this for sketching feature
 
     def solve_draw(self, board, r, c, color):
         pg.draw.rect(self.canvas, pg.Color("white"), pg.Rect(c * 70 + 20, r * 70 + 20, 50, 50), 0)
-        n_text = font.render(str(board[r][c]), True, pg.Color(color))
+        n_text = font.render(str(board.board[r][c].value.get()), True, pg.Color(color))
         self.canvas.blit(n_text, pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))
 
     def backtracking_solver(self, board, r, c):
@@ -92,8 +111,11 @@ class SudokuGUI:
                         pg.display.update()
                         return
 
-
-
+def update(GUI,board,r,c,color):
+    GUI.solve_draw(board, r, c, color)
+    pg.display.flip()
+    pg.display.update()
+    #pg.time.delay(15)
 # main
 def reset_game():
     global mySudoku
@@ -112,6 +134,9 @@ def sudoku_loop():
     pg.display.set_caption("Sudoku Solver")
     to_run = True
     myGUI = SudokuGUI(canvas)
+    GUIAdapter = SudokuCSP.CSPGUIAdapter(myGUI,"blue",update)
+    simple_board = SudokuBoard().sudoku_maker()
+    board = SudokuCSP.Board(simple_board,GUIAdapter)
     while to_run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -120,22 +145,24 @@ def sudoku_loop():
                 sys.exit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_1 or event.key == pg.K_KP1:
-                    myGUI.backtracking_solver(mySudoku.s_board, 0, 0)
+                    Timer.timer()
+                    board.backtracking_search()
+                    print(Timer.timer())
                     if myGUI.board_finished():
                         print("Game Over")
             if event.type == pg.MOUSEBUTTONDOWN:
                 myGUI.assign_number(pg.mouse.get_pos())
                 x, y = pg.mouse.get_pos()
                 if 475 <= x <= 625 and 670 <= y <= 720:
-                    reset_game()
+                    simple_board = SudokuBoard().sudoku_maker()
+                    board = SudokuCSP.Board(simple_board,GUIAdapter)
                 if 300 <= x <= 450 and 670 <= y <= 720:
                     go_to_menu()
                 if 125 <= x <= 275 and 670 <= y <= 720:
                     pg.quit()
                     sys.exit()
-
         myGUI.draw_canvas()
-        myGUI.draw_nums(mySudoku.s_board)
+        myGUI.draw_nums_CSP(board)
 
         reset_text = font.render("Reset", True, pg.Color("black"))
         reset_rect = reset_text.get_rect(center=(550, 695))
@@ -154,6 +181,5 @@ def sudoku_loop():
         canvas.blit(quit_text, quit_rect)
 
         pg.display.flip()
-
-# sudoku_loop()
-# pg.quit()
+#sudoku_loop()
+#pg.quit()
