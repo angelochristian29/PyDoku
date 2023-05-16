@@ -1,3 +1,4 @@
+import Menu
 from SudokuBoard import SudokuBoard
 import SudokuCSP
 import Menu
@@ -109,8 +110,6 @@ class SudokuGUI:
                         pg.display.flip()
                         pg.display.update()
                         return
-
-
 
 def update(GUI,board,r,c,color):
     GUI.solve_draw(board, r, c, color)
