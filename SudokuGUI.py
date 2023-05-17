@@ -1,3 +1,5 @@
+import os
+
 import Menu
 from SudokuBoard import SudokuBoard
 import SudokuCSP
@@ -97,19 +99,19 @@ class SudokuGUI:
                 if mySudoku.s_board[r][c] == 0:
                     return False
         return True
-    def assign_number(self,position):
-        if(position[0] > 630 or position[0] < 10 or position[1]>630 or position[1] < 10):
-            return
-        row = (position[1] - 10)//70
-        col = (position[0] - 10)//70
-        print(row,col)
-        while(True):
-            for event in pg.event.get():
-                if event.type == pg.KEYDOWN:
-                        mySudoku.s_board[row][col] = buttons[event.key]
-                        pg.display.flip()
-                        pg.display.update()
-                        return
+    # def assign_number(self,position):
+    #     if(position[0] > 630 or position[0] < 10 or position[1]>630 or position[1] < 10):
+    #         return
+    #     row = (position[1] - 10)//70
+    #     col = (position[0] - 10)//70
+    #     print(row,col)
+    #     while(True):
+    #         for event in pg.event.get():
+    #             if event.type == pg.KEYDOWN:
+    #                     mySudoku.s_board[row][col] = buttons[event.key]
+    #                     pg.display.flip()
+    #                     pg.display.update()
+    #                     return
 
 def update(GUI,board,r,c,color):
     GUI.solve_draw(board, r, c, color)
@@ -143,43 +145,57 @@ def sudoku_loop():
                 # to_run = False
                 pg.quit()
                 sys.exit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_1 or event.key == pg.K_KP1:
+            # if event.type == pg.KEYDOWN:
+            #     if event.key == pg.K_1 or event.key == pg.K_KP1:
+            #         Timer.timer()
+            #         board.backtracking_search()
+            #         print(Timer.timer())
+            #         if myGUI.board_finished():
+            #             print("Game Over")
+            if event.type == pg.MOUSEBUTTONDOWN:
+                # myGUI.assign_number(pg.mouse.get_pos())
+                x, y = pg.mouse.get_pos()
+                if 486 <= x <= 611 and 670 <= y <= 720:
+                    simple_board = SudokuBoard().sudoku_maker()
+                    board = SudokuCSP.Board(simple_board,GUIAdapter)
+                if 329 <= x <= 454 and 670 <= y <= 720:
+                    go_to_menu()
+                if 172 <= x <= 295 and 670 <= y <= 720:
+                    pg.quit()
+                    sys.exit()
+                if 15 <= x <= 140 and 670 <= y <= 720:
                     Timer.timer()
                     board.backtracking_search()
                     print(Timer.timer())
                     if myGUI.board_finished():
                         print("Game Over")
-            if event.type == pg.MOUSEBUTTONDOWN:
-                myGUI.assign_number(pg.mouse.get_pos())
-                x, y = pg.mouse.get_pos()
-                if 475 <= x <= 625 and 670 <= y <= 720:
-                    simple_board = SudokuBoard().sudoku_maker()
-                    board = SudokuCSP.Board(simple_board,GUIAdapter)
-                if 300 <= x <= 450 and 670 <= y <= 720:
-                    go_to_menu()
-                if 125 <= x <= 275 and 670 <= y <= 720:
-                    pg.quit()
-                    sys.exit()
+
         myGUI.draw_canvas()
         myGUI.draw_nums_CSP(board)
 
+        width = 125
+        height = 50
+
         reset_text = font.render("Reset", True, pg.Color("black"))
-        reset_rect = reset_text.get_rect(center=(550, 695))
-        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(475, 670, 150, 50), 0)
+        reset_rect = reset_text.get_rect(center=(486+(width/2), 695))
+        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(486, 670, width, height), 0)
 
         menu_text = font.render("Menu", True, pg.Color("black"))
-        menu_rect = reset_text.get_rect(center=(375, 695))
-        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(300, 670, 150, 50), 0)
+        menu_rect = reset_text.get_rect(center=(329+(width/2), 695))
+        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(329, 670, width, height), 0)
 
         quit_text = font.render("Quit", True, pg.Color("black"))
-        quit_rect = reset_text.get_rect(center=(200, 695))
-        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(125, 670, 150, 50), 0)
+        quit_rect = reset_text.get_rect(center=(180+(width/2), 695))
+        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(172, 670, width, height), 0)
+
+        solve_text = font.render("Solve", True, pg.Color("black"))
+        solve_rect = solve_text.get_rect(center=(15+(width/2), 695))
+        pg.draw.rect(canvas, pg.Color("gray"), pg.Rect(15, 670, width, height), 0)
 
         canvas.blit(reset_text, reset_rect)
         canvas.blit(menu_text, menu_rect)
         canvas.blit(quit_text, quit_rect)
-
+        canvas.blit(solve_text, solve_rect)
         pg.display.flip()
 #sudoku_loop()
 #pg.quit()
