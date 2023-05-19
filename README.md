@@ -45,6 +45,6 @@ Completely solved:
 ![](Images/pygameWindow_FullySolved.png)
 
 ### Prototype 3:
-Revised the project for an Intro to AI course. The method of solving is now a constraint-satisfaction-problem with alldifferent constraints. Now solving times are greatly reduced.
+Revised the project for an Intro to AI course. The method of solving is now a constraint-satisfaction-problem with alldifferent constraints. Now solving times are greatly reduced. Also a menu system and new buttons were added to the GUI.
 
-![]
+![](Images/SudokuSolver3.png)
