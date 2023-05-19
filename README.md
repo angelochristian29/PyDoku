@@ -13,7 +13,7 @@ Create a Sudoku board and use backtracking to solve it
 ## How to Use App
 1. After files are downloaded, the user should run "pip install pygame" in the command line. If you still get an error message, then go to Python Packages page. Search Pygame in the
 search bar and click on “install with pip” button.
-2. Make sure to run the Diver.py to start the pygame executable.
+2. Make sure to run the Driver.py to start the pygame executable.
 3. Click on the "Start" button to go to the empty board.
 4. Press the "Solve" button to run the CSP algorithm.
 5. Once puzzle is solved, the numbers will turn black and the app can be exited using the "Quit" Button.
