@@ -120,6 +120,7 @@ def sudoku_loop():
                 # to_run = False
                 pg.quit()
                 sys.exit()
+
             if event.type == pg.MOUSEBUTTONDOWN:
                 # myGUI.assign_number(pg.mouse.get_pos())
                 x, y = pg.mouse.get_pos()
@@ -163,5 +164,4 @@ def sudoku_loop():
         canvas.blit(quit_text, quit_rect)
         canvas.blit(solve_text, solve_rect)
         pg.display.flip()
-#sudoku_loop()
-#pg.quit()
+
