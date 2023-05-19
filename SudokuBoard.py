@@ -1,3 +1,27 @@
+# coding: utf-8
+# NAME: SudokuBoard.py
+"""
+Python module that has defines a class to represent a sudoku board as a 2D List.
+"""
+"""
+AUTHOR: Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin
+
+
+   Unpublished-rights reserved under the copyright laws of the United States.
+
+   This data and information is proprietary to, and a valuable trade secret
+   of, Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin. It is given 
+   in confidence by Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin. 
+   Its use, duplication, or disclosure is subject to
+   the restrictions set forth in the License Agreement under which it has been
+   distributed.
+
+      Unpublished Copyright © 2022  Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin
+      All Rights Reserved
+"""
+"""
+Imports
+"""
 class SudokuBoard:
 
     def __init__(self):
@@ -41,3 +65,8 @@ class SudokuBoard:
     def board_printer(self, board):
         for line in board:
             print(line)
+
+if __name__ == "main":
+    print("SudokuBoard.py: Module is executed")
+else:
+    print("SudokuBoard.py: Module is imported")
