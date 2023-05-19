@@ -1,18 +1,47 @@
-import os
+# coding: utf-8
+# NAME: SudokuGUI.py
+"""
+Python module that has provides the GUI for the Sudoku solver
+"""
+"""
+AUTHOR: Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin
 
-import Menu
+
+   Unpublished-rights reserved under the copyright laws of the United States.
+
+   This data and information is proprietary to, and a valuable trade secret
+   of, Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin. It is given 
+   in confidence by Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin. 
+   Its use, duplication, or disclosure is subject to
+   the restrictions set forth in the License Agreement under which it has been
+   distributed.
+
+      Unpublished Copyright © 2022  Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin
+      All Rights Reserved
+"""
+
+"""
+Imports
+"""
+
 from SudokuBoard import SudokuBoard
 import SudokuCSP
 import Menu
 import sys, pygame as pg
 import time
 
+"""
+Defines dictionary called buttons to map key codes to corresponding numbers
+"""
 buttons = {pg.K_1:1,pg.K_2:2,pg.K_3:3,pg.K_4:4,pg.K_5:5,pg.K_6:6,pg.K_7:7,pg.K_8:8,pg.K_9:9}
 pg.init()
 font = pg.font.SysFont(None, 60)
 mySudoku = SudokuBoard()
 mySudoku.s_board = mySudoku.sudoku_maker()
 
+"""
+Creates a Timer class which measures elapsed time,  Used to compared time between backtracking and our modified backtracking code
+"""
 class Timer():
     started = False
     start = 0
@@ -23,7 +52,10 @@ class Timer():
         else:
             Timer.start = time.time()
             Timer.started = True
-        
+
+"""
+Defines a class which is responsible for handling the graphical user interface for the Sudoku game, utilizes the module from pygame to create the canvas
+"""
 class SudokuGUI:
     def __init__(self, canvas):
         self.canvas = canvas
@@ -39,17 +71,7 @@ class SudokuGUI:
             pg.draw.line(self.canvas, pg.Color("black"), pg.Vector2(10, (i * 70) + 10), pg.Vector2(640, (i * 70) + 10),
                          line_width)
             i += 1
-        if self.board_finished():
-            n_text = font.render("Game Over", True, pg.Color("black"))
-            self.canvas.blit(n_text, pg.Vector2(210, 680))
 
-    def draw_nums(self, board):
-        for r in range(9):
-            for c in range(9):
-                if board[r][c] != 0:
-                    n_text = font.render(str(board[r][c]), True, pg.Color("black"))
-                    self.canvas.blit(n_text,
-                                     pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))  # modify this for sketching feature
     def draw_nums_CSP(self,board):
         for r in range(9):
             for c in range(9):
@@ -62,56 +84,6 @@ class SudokuGUI:
         pg.draw.rect(self.canvas, pg.Color("white"), pg.Rect(c * 70 + 20, r * 70 + 20, 50, 50), 0)
         n_text = font.render(str(board.board[r][c].value.get()), True, pg.Color(color))
         self.canvas.blit(n_text, pg.Vector2((c * 70) + 33.5, (r * 70) + 27.5))
-
-    def backtracking_solver(self, board, r, c):
-        if r > mySudoku.side - 1:
-            return True
-        if board[r][c] != 0:
-            if c == mySudoku.side - 1:
-                itr = self.backtracking_solver(board, r + 1, 0)
-            else:
-                itr = self.backtracking_solver(board, r, c + 1)
-            return itr
-        else:
-            for i in range(1, mySudoku.side + 1):
-                if mySudoku.is_present(board, r, c, i):
-                    board[r][c] = i
-                    self.solve_draw(board, r, c, "blue")
-                    pg.display.flip()
-                    pg.display.update()
-                    pg.time.delay(15)
-                    if c == mySudoku.side - 1:
-                        itr = self.backtracking_solver(board, r + 1, 0)
-                    else:
-                        itr = self.backtracking_solver(board, r, c + 1)
-                    if itr is True:
-                        return True
-            board[r][c] = 0
-            self.solve_draw(board, r, c, "red")
-            pg.display.flip()
-            pg.display.update()
-            pg.time.delay(15)
-            return False
-
-    def board_finished(self):
-        for r in range(mySudoku.side):
-            for c in range(mySudoku.side):
-                if mySudoku.s_board[r][c] == 0:
-                    return False
-        return True
-    # def assign_number(self,position):
-    #     if(position[0] > 630 or position[0] < 10 or position[1]>630 or position[1] < 10):
-    #         return
-    #     row = (position[1] - 10)//70
-    #     col = (position[0] - 10)//70
-    #     print(row,col)
-    #     while(True):
-    #         for event in pg.event.get():
-    #             if event.type == pg.KEYDOWN:
-    #                     mySudoku.s_board[row][col] = buttons[event.key]
-    #                     pg.display.flip()
-    #                     pg.display.update()
-    #                     return
 
 def update(GUI,board,r,c,color):
     GUI.solve_draw(board, r, c, color)
@@ -129,6 +101,9 @@ def go_to_menu():
     Menu.main()
 
 
+"""
+Main game loop, handles various events such as quitting game, mouse clicks and solving the puzzles. 
+"""
 def sudoku_loop():
     canvas_size = 650, 750
     canvas = pg.display.set_mode(canvas_size)
@@ -145,13 +120,6 @@ def sudoku_loop():
                 # to_run = False
                 pg.quit()
                 sys.exit()
-            # if event.type == pg.KEYDOWN:
-            #     if event.key == pg.K_1 or event.key == pg.K_KP1:
-            #         Timer.timer()
-            #         board.backtracking_search()
-            #         print(Timer.timer())
-            #         if myGUI.board_finished():
-            #             print("Game Over")
             if event.type == pg.MOUSEBUTTONDOWN:
                 # myGUI.assign_number(pg.mouse.get_pos())
                 x, y = pg.mouse.get_pos()
@@ -167,8 +135,6 @@ def sudoku_loop():
                     Timer.timer()
                     board.backtracking_search()
                     print(Timer.timer())
-                    if myGUI.board_finished():
-                        print("Game Over")
 
         myGUI.draw_canvas()
         myGUI.draw_nums_CSP(board)
