@@ -1,9 +1,43 @@
+# coding: utf-8     # <- This is an encoding declaration  REQUIRED
+#NAME:  Menu.py
+"""
+This is the starting Module for the entire project. The main function will kick off the menu gui which will call all the
+other files according to the buttons. The code in this file creates a GUI for the menu. Everything is done in def
+main(). It will create a Main menu page that is 630x630. It will have a Welcome! title and two buttons one to start and
+one to quit. This file's def main() will be called by SudokuGUI.py in case the user presses the button to come back
+to the main menu.
+"""
+
+"""
+AUTHOR: Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin
+
+
+   Unpublished-rights reserved under the copyright laws of the United States.
+
+   This data and information is proprietary to, and a valuable trade secret
+   of, Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin. It is given 
+   in confidence by Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin. 
+   Its use, duplication, or disclosure is subject to
+   the restrictions set forth in the License Agreement under which it has been
+   distributed.
+
+      Unpublished Copyright © 2022  Christian Hernandez, Felix Ohlgart, Angela Yang and Shivam Amin
+      All Rights Reserved
+"""
+
+"""
+Imports
+"""
 import sys
 import pygame
 import SudokuGUI
 
 pygame.init()
 
+"""
+Defines a class which is responsible for handling the graphical user interface for the Main menu game, utilizes the 
+module from pygame to create the canvas
+"""
 def main():
     screen = pygame.display.set_mode((630, 630))
     pygame.display.set_caption("Welcome to PyDoku!")
@@ -47,6 +81,11 @@ def main():
         pygame.display.update()
 
 
-
+"""
+Driver
+"""
 if __name__ == "__main__":
+    print("Menu.py: Module is executed")
     main()
+else:
+    print("Menu.py: Module is imported")
