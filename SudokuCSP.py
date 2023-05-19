@@ -1,23 +1,25 @@
-# import queue
+# coding: utf-8
+# NAME: SudokuCSP.py
+"""
+Python module that defines classes used for CSP backtracking. Implements arc inferencing and CSP backtracking. 
+"""
+"""
+Imports
+"""
 import heapq
-from dataclasses import dataclass, field
-from typing import Any
 
-from SudokuBoard import SudokuBoard
-#from SudokuGUI import *
-import pygame as pg
+alphabet = "ABCDEFGHI" #String used for the name of the variables ie. A1, A2
 
-alphabet = "ABCDEFGHI"
-
+# Class used to adapt the previously created GUI class to CSP classes
 class CSPGUIAdapter():
     def __init__(self,GUI,color,update) -> None:
         self.updateGUI = update
         self.GUI = GUI
         self.color = color
-    def update(self,board,r,c,color):
+    def update(self,board,r,c,color): #Called when a value is changed in backtracking or arc inferencing
         self.updateGUI(self.GUI,board,r,c,color)
                 
-
+#Class defined to represent an integer. Needed to revert values after failure. Primitive type integer does not allow for this. 
 class Integer():
     def __init__(self, value=0,square=None) -> None:
         self.value = value
@@ -32,7 +34,7 @@ class Integer():
     def get(self):
         return self.value
 
-
+#Defines a queue where the first object in is the first one out
 class Queue():
     def __init__(self) -> None:
         self.list = []
@@ -52,20 +54,21 @@ class Queue():
             string = string + str(item)
         return string
 
-
+#Defines a class representing each node/square on a Sudoku board. For CSP, it represents a variable, which contains a domain and constraints. 
 class Square():
     def __init__(self, name="", value=0,r=0,c=0,board=None) -> None:
         self.name = name
-        self.domain = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        self.constraints = []
+        self.domain = [1, 2, 3, 4, 5, 6, 7, 8, 9] #Used for CSP, defines all possible values
+        self.constraints = [] #Used for CSP, defines all constraints on the variable. For Sudoku, it is always an all-dif constraint. 
         self.value = Integer(value,self)
         self.coord = (r,c)
         if (self.value.get() != 0):
             self.domain = [value]
         self.degree = 0
         self.board = board
-
-    def remove(self, value, removals=None):
+#Method to reduce domain based on given value. If the value exists in the domain, it is removed. 
+#If the domain is reduced to 1 number, the value of the square is set to that value.
+    def remove(self, value, removals=None): 
         if removals is None:
             removals = []
         contains = self.domain.__contains__(value)
@@ -94,6 +97,7 @@ class Square():
             if constraint.value.get() == 0:
                 self.degree += 1
 
+#Updates connected constraints based on the varaible's current value. Essentially an arc inference. 
     def constraint_update(self, constraint, removals=None):
         if removals is None:
             removals = []
@@ -122,6 +126,7 @@ class Square():
     def __ge__(self, other):
         return len(self.domain) <= len(other.domain)
 
+#Represents the entire SudokuBoard, a 2d array of varaibles/nodes. Includes the CSP backtracking and arc inferencing algorithms.
 class Board():
     def __init__(self, init=None,GUIAd = None) -> None:
         self.board = []
@@ -129,22 +134,23 @@ class Board():
         self.side = self.base ** 2
         self.GUIAd = GUIAd
         self.sum = 0
-        self.initialize(init)
+        self.initialize(init) 
 
+# Gets all the variables/nodes in a row. Used to define constraints.
     def getRow(self, row, col):
         values = []
         for i in range(self.side):
             if (i != col):
                 values.append(self.board[row][i])
         return values
-
+# Gets all the variables/nodes in a column. Used to define constraints.
     def getColumn(self, row, col):
         values = []
         for i in range(self.side):
             if (i != row):
                 values.append(self.board[i][col])
         return values
-
+# Gets all the variables/nodes in a square. Used to define constraints.
     def getSquare(self, row, col):
         values = []
         box_row = row - (row % self.base)
@@ -154,8 +160,9 @@ class Board():
                 if (i != row and j != col):
                     values.append(self.board[i][j])
         return values
-
-    def arc_inference(self, arc_queue=None, removals=None):
+#Keeps track of variables with a queue. While the queue isn't empty, pops a variable/node, reduces the domain of its constraints by its value,
+#and if the constraint receives a value from domain reduction, add it to the queue. Also checks for failure if domain size is reduced to 0. 
+    def arc_inference(self, arc_queue=None, removals=None): 
         if removals is None:
             removals = []
         if (arc_queue is None):
@@ -168,7 +175,8 @@ class Board():
                     if (len(constraint.domain) == 0):
                         return False
         return True
-
+#Defines the board of variables. If a 2d array of numbers is given, sets variable values to those numbers, otherwise everything is set to 0.
+# Also, does an initial domain reduction using arc inferencing. 
     def initialize(self, init=None):
         for i in range(self.side):
             self.board.append([])
@@ -190,6 +198,7 @@ class Board():
                     arc_queue.put(self.board[i][j])
         self.arc_inference(arc_queue)
 
+#Puts all values without a value onto a min heap. Calls backtrack() which does the actual search. 
     def backtracking_search(self):
         heap = []
         for i in range(self.side):
@@ -197,7 +206,9 @@ class Board():
                 if (self.board[i][j].getValue() == 0):
                     heapq.heappush(heap, self.board[i][j])
         return self.backtrack(heap)
-
+#The CSP backtracking algorithm. Implements minimum-remaining-values heuristic using the heap and forward checking using arc_inferencing()
+#Chooses a number from a variable/nodes domain and sets its value to that number. Does arc_inferencing and if it succeeds, goes to the next square.
+#If it doesnt, it reverts all of the changes.
     def backtrack(self, heap):
         if (len(heap) == 0  or self.sum == 405):
             return True
@@ -214,14 +225,14 @@ class Board():
             removals.append((square.value, prev_value))
             arc_queue = Queue()
             arc_queue.put(square)
-            if (self.arc_inference(arc_queue, removals)):
+            if (self.arc_inference(arc_queue, removals)): #Forward checking
                 result = self.backtrack(heap) 
                 if(result):
                     return result
-            self.reverse_removals(removals)
+            self.reverse_removals(removals) #Reverts changes
         heapq.heappush(heap, square)  
         return False
-
+#Reverts the changes caused by forward checking and backtracking value assignments.
     def reverse_removals(self, removals):
         for removed in removals:
             if (type(removed[0]) is Integer):
@@ -250,29 +261,10 @@ def debug_board(test_board):
     for i in range(test_board.side):
             for j in range(test_board.side):
                 print(test_board.board[i][j])
-'''
-board = Board([
-[0, 3, 4, 0, 7, 0, 0, 0, 0],
-[5, 9, 2, 0, 0, 4, 0, 0, 0],
-[0, 8, 0, 0, 0, 0, 0, 0, 0],
-[8, 0, 0, 0, 0, 0, 0, 2, 0],
-[0, 0, 0, 0, 0, 0, 7, 0, 0],
-[0, 1, 0, 0, 0, 0, 6, 0, 8],
-[0, 6, 0, 7, 0, 0, 0, 5, 0],
-[0, 0, 0, 0, 0, 0, 0, 6, 0],
-[0, 5, 3, 6, 0, 0, 0, 0, 0]])
-test_board(board)
-
-board = Board()
-test_board(board)
-
-board = Board(
-        [[0, 0, 3, 0, 2, 0, 6, 0, 0], [9, 0, 0, 3, 0, 5, 0, 0, 1], [0, 0, 1, 8, 0, 6, 4, 0, 0],
-         [0, 0, 8, 1, 0, 2, 9, 0, 0],
-         [7, 0, 0, 0, 0, 0, 0, 0, 8], [0, 0, 6, 7, 0, 8, 2, 0, 0], [0, 0, 2, 6, 0, 9, 5, 0, 0],
-         [8, 0, 0, 2, 0, 3, 0, 0, 9],
-         [0, 0, 5, 0, 1, 0, 3, 0, 0]])
-test_board(board)
-random_board = Board(SudokuBoard().sudoku_maker())
-test_board(random_board)
-'''
+"""
+Module execute/load check. REQUIRED
+"""
+if __name__ == '__main__':
+    print("SudokuCSP.py: Module is executed.")
+else:
+    print("SudokuCSP.py: Module is imported.")
