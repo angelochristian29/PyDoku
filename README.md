@@ -26,12 +26,7 @@ Implemented the backtracking in order to solve the puzzle in the console.
 
 ![](Images/BackTrackedSudokuEx.png)
 
-### Prototype #2:
-Included a GUI that only displays the partially filled sudoku board.
-
-![](Images/pygameWindow_Unsolved.png)
-
-### Prototype 3:
+### Prototype 2:
 Project is visually pleasing with updated GUI. Below are some examples of how the app works.
 
 Partially solved:
