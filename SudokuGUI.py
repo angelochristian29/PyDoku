@@ -98,7 +98,7 @@ def reset_game():
 
 
 def go_to_menu():
-    Menu.main()
+    Menu.menu_loop()
 
 
 """
@@ -165,3 +165,7 @@ def sudoku_loop():
         canvas.blit(solve_text, solve_rect)
         pg.display.flip()
 
+if __name__ == "__main__":
+    print("SudokuGUI.py: Module is executed")
+else:
+    print("SudokuGUI.py: Module is imported")
